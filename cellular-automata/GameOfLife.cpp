@@ -54,8 +54,59 @@ void GameOfLife::step(){
                 }
             }
             int i = y * col + x;
-            //DUDU: finish
+            bool alive = getCell(x,y);
+            if(alive && aliveNeighbor == 2 || aliveNeighbor == 3){
+                board[i] = 0b11;
+            } else if(!alive && aliveNeighbor == 3){
+                board[i] = 0b10;
+            } else {
+                board[i] = alive? 0b01 : 0b00;
+            }
         }
+    }
+    for(auto& cell: board){
+        cell >>= 1;
     }
 }
 
+const uint8_t* GameOfLife::getBoard() const{
+    return board.data();
+}
+
+int GameOfLife::getBoardSize() const {
+    return board.size();
+}
+
+
+
+extern "C" {
+
+GameOfLifeHandle GameOfLife_create(int row, int col) {
+    return new GameOfLife(row, col);
+}
+
+void GameOfLife_destroy(GameOfLifeHandle handle) {
+    delete static_cast<GameOfLife*>(handle);
+}
+
+void GameOfLife_setCell(GameOfLifeHandle handle, int x, int y, bool state) {
+    static_cast<GameOfLife*>(handle)->setCell(x, y, state);
+}
+
+bool GameOfLife_getCell(GameOfLifeHandle handle, int x, int y) {
+    return static_cast<GameOfLife*>(handle)->getCell(x, y);
+}
+
+void GameOfLife_step(GameOfLifeHandle handle) {
+    static_cast<GameOfLife*>(handle)->step();
+}
+
+const uint8_t* GameOfLife_getBoard(GameOfLifeHandle handle) {
+    return static_cast<GameOfLife*>(handle)->getBoard();
+}
+
+int GameOfLife_getBoardSize(GameOfLifeHandle handle) {
+    return static_cast<GameOfLife*>(handle)->getBoardSize();
+}
+
+}
