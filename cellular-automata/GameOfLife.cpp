@@ -2,7 +2,6 @@
 #include <cstdint>
 
 
-extern "C"{
 
 
 GameOfLife::GameOfLife(int row, int col): 
@@ -23,7 +22,7 @@ bool GameOfLife::getCell(int x, int y)const {
 }
 
 bool GameOfLife::isInBounds(int index) const{
-    if(index > 0 && index < board.size()){
+    if(index >= 0 && index < board.size()){
         return true;
     }else {
         return false;
@@ -41,28 +40,22 @@ void GameOfLife::setCell(int x, int y, bool state){
 }
 
 void GameOfLife::step(){
-    for(int i = 0; i < board.size(); i++){
-        int neighborCount = 0;
-        if(isInBounds(i-1) && (board[i-1] & 0b01 || board[i-1] & 0b11)) neighborCount++;
-        if(isInBounds(i+1) && (board[i+1] & 0b01 || board[i+1] & 0b11)) neighborCount++;
-        if(isInBounds(i-col-1) && (board[i-col-1] & 0b01 || board[i-col-1] & 0b11)) neighborCount++;
-        if(isInBounds(i-col) && (board[i-col] & 0b01 || board[i-col] & 0b11)) neighborCount++;
-        if(isInBounds(i-col+1) && (board[i-col+1] & 0b01 || board[i-col+1] & 0b11)) neighborCount++;
-        if(isInBounds(i+col-1) && (board[i+col-1] & 0b01 || board[i+col-1] & 0b11)) neighborCount++;
-        if(isInBounds(i+col) && (board[i+col] & 0b01 || board[i+col] & 0b11)) neighborCount++;
-        if(isInBounds(i+col+1) && (board[i+col+1] & 0b01 || board[i+col+1] & 0b11)) neighborCount++;
-        
-        if(board[i] & 0b01){
-            if(neighborCount < 2){board[i] = 0b01;}
-            else if (neighborCount >=2 && neighborCount <= 3) {
-                board[i] = 0b11;
-            }else{
-                board[i] = 0b01;
+    for(int y = 0; y < row; y++){
+        for(int x = 0; x < col; x++){
+            int aliveNeighbor = 0;
+            for(int dy = -1; dy <= 1; dy++){
+                for(int dx = -1; dx <= 1; dx++){
+                    if(dy == 0 and dx == 0) continue;
+                    int ny = y + dy;
+                    int nx = x + dx;
+                    if(isInBounds(nx, ny) && getCell(nx, ny)){
+                        aliveNeighbor++;
+                    }
+                }
             }
-        }else if (board[i] & 0b00 && neighborCount == 3) {
-            board[i] = 0b10;
+            int i = y * col + x;
+            //DUDU: finish
         }
     }
 }
 
-}
