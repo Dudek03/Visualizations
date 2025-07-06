@@ -55,7 +55,7 @@ void GameOfLife::step(){
             }
             int i = y * col + x;
             bool alive = getCell(x,y);
-            if(alive && aliveNeighbor == 2 || aliveNeighbor == 3){
+            if(alive && (aliveNeighbor == 2 || aliveNeighbor == 3)){
                 board[i] = 0b11;
             } else if(!alive && aliveNeighbor == 3){
                 board[i] = 0b10;
