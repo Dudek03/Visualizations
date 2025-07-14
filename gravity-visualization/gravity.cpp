@@ -1,12 +1,8 @@
+#include <algorithm>
 #include <vector>
 #include <cmath>
+#include "gravity.h"
 
-
-struct Mass{
-    int x;
-    int y;
-    double mass;
-};
 
 const double G = 9.81;
 
@@ -19,9 +15,11 @@ void vectorDir(int x, int y, double* outFx, double* outFy) {
         double dx = x - mass.x;
         double dy = y - mass.y;
         double r2 = dx*dx + dy*dy;
-        if (r2 < 1e-6) continue;
+        constexpr double ESP = 4.0;
+        if (r2 < ESP * ESP) continue;
 
-        double r3 = r2 * std::sqrt(r2);
+        double softening = 5.0;
+        double r3 = std::pow(r2 + softening * softening, 1.5);
         fx += -G * mass.mass * dx / r3;
         fy += -G * mass.mass * dy / r3;
     }
@@ -34,15 +32,23 @@ void addMass(int x, int y, double mass){
     gravityPoints.push_back({x,y,mass});
 }
 
-void clearMassess(){
+
+void removeMass(int x, int y){
+    gravityPoints.erase(std::remove_if(gravityPoints.begin(), gravityPoints.end(), 
+                                       [x,y](const Mass& m){
+                                       return m.x == x && m.y == y;
+                                       }),
+        gravityPoints.end());                
+}
+
+void clearMasses(){
     gravityPoints.clear();
 }
 
-int main(){
-
-
-
-    return 0;
+const Mass* getMasses(){
+    return gravityPoints.data();
 }
 
-
+const int getMassesCount(){
+    return gravityPoints.size();
+}
